@@ -2,11 +2,25 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import urllib.parse
+from dotenv import load_dotenv
+import os
 
-password = "Privaci@123" # we can get password from .env but now pls set password here.
-encoded_password = urllib.parse.quote_plus(password)
+# Load environment variables from .env file
+load_dotenv()
 
-SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://root:{encoded_password}@localhost/ecommerce_admin"
+# Get database credentials from environment variables
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+
+# URL encode the password to handle special characters
+encoded_password = urllib.parse.quote_plus(DB_PASSWORD)
+
+# Create database URL
+SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{DB_USER}:{encoded_password}@{DB_HOST}/{DB_NAME}"
+
+# Create engine and session
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
